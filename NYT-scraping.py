@@ -10,7 +10,7 @@ from rake_nltk import Rake
 #   -o  Output CSV file path (default: nyt_articles.csv)
 #   -r  Strip punctuation from extracted keywords
 
-NYT_API_KEY = "your_api_key_here"  # https://developer.nytimes.com/
+NYT_API_KEY = "H6qXc3zNyk2hI38RErm60uhEAMP8KTT7y5ugRV6jK2oVH4Gy"  # https://developer.nytimes.com/
 
 def extract_keywords(text: str, remove_punctuation: bool = False) -> str:
     if not text or not text.strip():
@@ -65,12 +65,12 @@ def get_recent_articles(minutes: int = 10, source: str = "all", section: str = "
 
 def save_to_csv(
     articles: list[dict],
-    output_path: str = "nyt_articles.csv",
+    output_path: str = "nyt_data/nyt_articles.csv",
     remove_punctuation: bool = False,
 ) -> str:
     fieldnames = ["ID", "title", "abstract", "key_words", "publish_time"]
 
-    with open(output_path, "w", newline="", encoding="utf-8") as f:
+    with open("nyt_data/output_path", "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
 
