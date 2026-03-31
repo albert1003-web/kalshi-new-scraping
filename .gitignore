@@ -1,1 +1,8 @@
-data/*
+scripts/data/*
+venv/
+include/*.p8
+include/*.pub
+include/data/*.csv
+include/*.csv
+.DS_Store
+__pycache__/
