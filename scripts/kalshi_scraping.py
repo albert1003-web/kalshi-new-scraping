@@ -9,9 +9,11 @@ import os
 try:
     nltk.data.find('corpora/stopwords')
     nltk.data.find('tokenizers/punkt')
+    nltk.data.find('tokenizers/punkt_tab')
 except LookupError:
     nltk.download('stopwords')
     nltk.download('punkt')
+    nltk.download('punkt_tab')
 
 KALSHI_API_BASE = "https://api.elections.kalshi.com/trade-api/v2"
 
@@ -64,13 +66,13 @@ def get_all_kalshi_events():
     return events
 
 def save_to_csv(events: list[dict]):
-    base_dir = 'data/kalshi_data'
+    base_dir = "/usr/local/airflow/include/data/kalshi_data"
     if not os.path.exists(base_dir):
         os.makedirs(base_dir)
 
     # File Paths
     events_file = os.path.join(base_dir, "kalshi_events.csv")
-    keywords_file = os.path.join("data/keywords.csv")
+    keywords_file = os.path.join("/usr/local/airflow/include/data/keywords.csv")
     junction_file = os.path.join(base_dir, "events_keywords.csv")
 
     master_keywords = set()
