@@ -5,4 +5,6 @@ include/*.pub
 include/data/*.csv
 include/data
 .DS_Store
+5114_key.txt
+*.env
 __pycache__/
