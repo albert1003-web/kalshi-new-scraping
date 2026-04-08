@@ -1,7 +1,7 @@
 from airflow import DAG
 from airflow.decorators import task
 from airflow.datasets import Dataset
-from datetime import datetime
+from datetime import datetime, timedelta
 from scripts import kalshi_scraping, NYT_scraping
 from airflow.providers.snowflake.hooks.snowflake import SnowflakeHook
 import os
@@ -11,7 +11,7 @@ raw_kalshi_dataset = Dataset("snowflake://kalshi/raw_kalshi")
 with DAG(
     dag_id='load_csv',
     start_date=datetime(2026, 1, 1),
-    schedule="@daily",
+    schedule=timedelta(minutes=5),
     catchup=False
 ) as load_csv:
     
