@@ -4,6 +4,7 @@ import os
 import time
 import base64
 import sys
+from confluent_kafka import Producer
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding
 import websockets
@@ -25,6 +26,17 @@ load_dotenv()
 API_KEY_ID = os.getenv("KALSHI_API_KEY_ID")
 PRIVATE_KEY_PATH = "../5114_key.txt"
 WS_URL = "wss://api.elections.kalshi.com/trade-api/ws/v2"
+
+conf = {
+    'bootstrap.servers': 'localhost:9092',
+    'client.id': 'kalshi-producer'
+}
+producer = Producer(conf)
+
+def delivery_report(err, msg):
+    """ Optional callback to confirm the message hit the broker """
+    if err is not None:
+        print(f'Kafka Delivery failed: {err}')
 
 def sign_wss_handshake(private_key_path):
     with open(private_key_path, "rb") as key_file:
@@ -68,6 +80,15 @@ async def subscribe_kalshi(ticker):
         await ws.send(json.dumps(subscribe_msg))
 
         async for message in ws:
+            # send to kafka
+            producer.produce(
+                topic='kalshi_market_data', 
+                key=market_ticker, 
+                value=message, 
+                on_delivery=delivery_report
+            )
+            producer.poll(0)
+
             data = json.loads(message)
             msg_type = data.get("type")
             msg_content = data.get("msg", {})
