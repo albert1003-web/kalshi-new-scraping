@@ -69,18 +69,19 @@ def save_to_csv(
     # output_path: str = "nyt_data/nyt_articles.csv",
     remove_punctuation: bool = False,
 ) -> str:
-    base_dir = "data/nyt_data"
+    base_dir = "/usr/local/airflow/include/data/nyt_data"
     if not os.path.exists(base_dir):
         os.makedirs(base_dir)
         
     articles_file = os.path.join(base_dir, "nyt_articles.csv")
-    keywords_file = os.path.join("data/keywords.csv")
+    keywords_file = os.path.join("/usr/local/airflow/include/data/keywords.csv")
     junction_file = os.path.join(base_dir, "articles_keywords.csv")
 
     master_keywords = set() # unique keywords
+    keywords_exists = os.path.exists(keywords_file)
 
     with open(articles_file, "w", newline="", encoding="utf-8") as f_art, \
-         open(keywords_file, "w", newline="", encoding="utf-8") as f_key, \
+         open(keywords_file, "a", newline="", encoding="utf-8") as f_key, \
          open(junction_file, "w", newline="", encoding="utf-8") as f_jun:
 
         art_writer = csv.DictWriter(f_art, fieldnames=["ID", "title", "abstract", "publish_time"])
@@ -88,7 +89,8 @@ def save_to_csv(
         jun_writer = csv.DictWriter(f_jun, fieldnames=["article_id", "keyword_id"])
 
         art_writer.writeheader()
-        key_writer.writeheader()
+        if not keywords_exists:
+            key_writer.writeheader()
         jun_writer.writeheader()
 
         for article in articles:

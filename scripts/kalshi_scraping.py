@@ -76,7 +76,8 @@ def save_to_csv(events: list[dict]):
     junction_file = os.path.join(base_dir, "events_keywords.csv")
 
     master_keywords = set()
-    
+    keywords_exists = os.path.exists(keywords_file)
+
     # Open all three writers
     with open(events_file, "w", newline="", encoding="utf-8") as f_ev, \
          open(keywords_file, "a", newline="", encoding="utf-8") as f_key, \
@@ -87,6 +88,8 @@ def save_to_csv(events: list[dict]):
         jun_writer = csv.DictWriter(f_jun, fieldnames=["event_id", "keyword_id"])
 
         ev_writer.writeheader()
+        if not keywords_exists:
+            key_writer.writeheader()
         jun_writer.writeheader()
 
         count = 0
