@@ -49,22 +49,12 @@ with DAG(
     def merge_file_info(kalshi, nyt):
         return kalshi + nyt
 
-    @task
-    def truncate_tables():
-        hook = SnowflakeHook(snowflake_conn_id='snowflake_default')
-        tables = ["EVENTS_KEYWORDS", "KALSHI_EVENTS", "KEYWORDS", "NY_TIMES_ARTICLES", "ARTICLES_KEYWORDS"]
-        for table in tables:
-            hook.run(f"TRUNCATE TABLE $[SNOWFALE_DATABASE].PUBLIC.{table}")
-
     @task(outlets=[raw_kalshi_dataset])
     def update_raw_kalshi_dataset():
         print("Raw Kalshi data was updated.")
 
-    truncated = truncate_tables()
     kalshi_file_info = get_kalshi_data()
     nyt_file_info = get_nyt_data()
-    truncated >> kalshi_file_info
-    truncated >> nyt_file_info
     file_info = merge_file_info(kalshi_file_info, nyt_file_info)
     loaded_files = load_file_to_stage.expand(file_data=file_info)
     loaded_files >> update_raw_kalshi_dataset()
