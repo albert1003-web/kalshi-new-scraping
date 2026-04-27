@@ -5,7 +5,7 @@ This project is designed to monitor live news information through the NYT API an
 
 The pipeline utilizes **Airflow (Astro)** to run a DAG that scrapes Kalshi and NYT for events and keywords and loads data in **Snowflake (our data warehouse)**, and a **TF-IDF weighted matching algorithm (IN DEVELOPMENT)** to identify any related articles/events. On each DAG run, we plan to wipe all tables.
 
-## Setup & Installation
+## Setup & Installation for Airflow/Batching Pipeline
 To install astro, run the following command.
 
 `brew install astro`
@@ -19,8 +19,10 @@ To start the environment, run the following command.
 Now, you should be able to view the UI at http://localhost:8080.
 
 
-### to run full stack:
+## Running the Full Application:
 
-Start airflow server
-Run kalshi_sockets.py
-In a new terminal window, run kafka_ui.py and open the UI window
+Follow above steps to start airflow server in the background
+
+In the root directory, run `docker compose up` to start a local Kafka instance
+Run kalshi_sockets.py with a market id of interest to begin populating Kafka
+In a new terminal window, run kafka_ui.py and open the UI window to see real time changes
