@@ -2,7 +2,7 @@ from airflow import DAG
 from airflow.decorators import task
 from airflow.datasets import Dataset
 from datetime import datetime, timedelta
-from scripts import kalshi_scraping, NYT_scraping
+from scripts import kalshi_scraping, NYT_scraping, tfidf_matching
 from airflow.providers.snowflake.hooks.snowflake import SnowflakeHook
 import os
 
@@ -41,21 +41,34 @@ with DAG(
         remove = f"REMOVE @PUBLIC.KALSHI_STAGE/{base}.gz"
         print(f"Loading {filename}...")
         hook.run(put)
+        if table == "MATCHES":
+            hook.run(f"TRUNCATE TABLE PUBLIC.{table}")
         hook.run(copy_into)
         hook.run(remove)
         return filename
 
     @task
-    def merge_file_info(kalshi, nyt):
-        return kalshi + nyt
+    def compute_matches():
+        tfidf_matching.compute_matches()
+        return [("matches.csv", "MATCHES")]
+
+    @task
+    def merge_file_info(kalshi, nyt, matches):
+        return kalshi + nyt + matches
 
     @task(outlets=[raw_kalshi_dataset])
     def update_raw_kalshi_dataset():
         print("Raw Kalshi data was updated.")
 
+    @task
+    def print_top_matches():
+        tfidf_matching.print_top_matches(5)
+
     kalshi_file_info = get_kalshi_data()
     nyt_file_info = get_nyt_data()
-    file_info = merge_file_info(kalshi_file_info, nyt_file_info)
+    matches_file_info = compute_matches()
+    [kalshi_file_info, nyt_file_info] >> matches_file_info
+    file_info = merge_file_info(kalshi_file_info, nyt_file_info, matches_file_info)
     loaded_files = load_file_to_stage.expand(file_data=file_info)
-    loaded_files >> update_raw_kalshi_dataset()
+    loaded_files >> update_raw_kalshi_dataset() >> print_top_matches()
     

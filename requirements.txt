@@ -2,3 +2,4 @@
 rake-nltk
 apache-airflow-providers-snowflake
 confluent-kafka
+scikit-learn
