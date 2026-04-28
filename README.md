@@ -78,3 +78,5 @@ In the root directory, run `docker compose up` to start a local Kafka instance.
 Run kalshi_sockets.py with a market ID of interest to begin populating Kafka.
 
 In a new terminal window, run kafka_ui.py and open the UI window to see real time changes.
+
+You can view a small demo of the UI here: https://drive.google.com/file/d/1U6zLAjUpLy2McKJl8XAgZftSsoRngoxn/view?usp=sharing.
