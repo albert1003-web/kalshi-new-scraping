@@ -12,9 +12,11 @@ To install astro, run the following command.
 
 Afterwards, please clone the repository and create a .env file to add your Snowflake credentials. These will be picked up and used in the `airflow_settings.yaml` file. If you run into any issues here, feel free to paste your credentials directly inside `airflow_settings.yaml`, but be careful not to expose this information later on. Remember place your private key inside of the `include/` directory. 
 
-Additionally, run the following code snippets inside Snowflake within your specific warehouse/database/schema to set up the tables: 
+Additionally, run the following code snippets inside Snowflake within your specific warehouse/database/schema to set up the stage tables: 
 
 ```sql
+CREATE STAGE IF NOT EXISTS PUBLIC.KALSHI_STAGE;
+
 CREATE TABLE IF NOT EXISTS KALSHI_EVENTS (
 	ID VARCHAR(16777216) NOT NULL,
 	TITLE VARCHAR(16777216) NOT NULL,
